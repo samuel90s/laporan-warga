@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2.0",
+        "azishapidin/indoregion": "^3.0",
         "barryvdh/laravel-dompdf": "^2.2.0",
         "laravel/breeze": "^2.0",
         "laravel/framework": "^11.10.0",
@@ -14,7 +15,6 @@
         "realrashid/sweet-alert": "^7.1.1"
     },
     "require-dev": {
-        "azishapidin/indoregion": "^3.0",
         "fakerphp/faker": "^1.23",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",

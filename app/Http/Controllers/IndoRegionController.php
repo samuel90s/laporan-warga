@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class IndoRegionController extends Controller
 {
     public function getRegency(Request $request)
-    {   
+    {
         $province_id = $request->province_id;
         $regencies = Regency::where('province_id', $province_id)->get();
         $option = "<option value=''>-- Pilih Kota/Kabupaten --</option>";

@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,37 +29,50 @@ Route::middleware(['guest'])->group(function () {
     // Register
     Route::get('/register', [\App\Http\Controllers\User\UserController::class, 'register'])->name('user.register');
     Route::post('/getdesa', [\App\Http\Controllers\IndoRegionController::class, 'getDesa'])->name('getdesa');
-    Route::post('/getkota', [\App\Http\Controllers\IndoRegionController::class, 'getkota'])->name('getkota');
-    Route::post('/getkecamatan', [\App\Http\Controllers\IndoRegionController::class, 'getkecamatan'])->name('getkecamatan');
-    Route::post('/getkabupaten', [\App\Http\Controllers\IndoRegionController::class, 'getkabupaten'])->name('getkabupaten');
+    Route::post('/getkota', [\App\Http\Controllers\IndoRegionController::class, 'getKota'])->name('getkota');
+    Route::post('/getkecamatan', [\App\Http\Controllers\IndoRegionController::class, 'getKecamatan'])->name('getkecamatan');
+    Route::get('/getprovinces', [\App\Http\Controllers\IndoRegionController::class, 'getProvinces'])->name('getprovinces');
     Route::post('/register/auth', [\App\Http\Controllers\User\UserController::class, 'register_post'])->name('user.register-post');
 });
 
 Route::middleware(['isMasyarakat'])->group(function () {
-     // Logout Masyarakat
-     Route::get('/logout', [\App\Http\Controllers\User\UserController::class, 'logout'])->name('user.logout');
+    // Logout Masyarakat
+    Route::get('/logout', [\App\Http\Controllers\User\UserController::class, 'logout'])->name('user.logout');
 
-
-     Route::get('/laporan/{who?}', [\App\Http\Controllers\User\UserController::class, 'laporan'])->name('pengaduan.laporan');
-     Route::get('/pengaduan-detail/{id_pengaduan}', [\App\Http\Controllers\User\UserController::class, 'detailPengaduan'])->name('pengaduan.detail');
+    Route::get('/laporan/{who?}', [\App\Http\Controllers\User\UserController::class, 'laporan'])->name('pengaduan.laporan');
+    Route::get('/pengaduan-detail/{id_pengaduan}', [\App\Http\Controllers\User\UserController::class, 'detailPengaduan'])->name('pengaduan.detail');
 });
 
-
-Route::prefix('admin')->group( function() {
-    Route::middleware('isAdmin')->group( function() {
-       Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-
-       Route::resource('/petugas', \App\Http\Controllers\Admin\PetugasController::class);
-       Route::resource('/masyarakat', \App\Http\Controllers\Admin\MasyarakatController::class);
-
-       Route::get('/laporan', [\App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('laporan.index');
-       Route::post('/laporan-get', [\App\Http\Controllers\Admin\LaporanController::class, 'laporan'])->name('laporan.get');
-       Route::post('/laporan/export', [\App\Http\Controllers\Admin\LaporanController::class, 'export'])->name('laporan.export');
+Route::prefix('admin')->group(function() {
+    Route::middleware('isGuest')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'formLogin'])->name('admin.masuk');
+        Route::post('/login', [\App\Http\Controllers\Admin\AdminController::class, 'login'])->name('admin.login');
     });
 
-    Route::middleware('isPetugas')->group( function() {
+    Route::middleware('isAdmin')->group(function() {
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+        Route::resource('/petugas', \App\Http\Controllers\Admin\PetugasController::class);
+        Route::resource('/masyarakat', \App\Http\Controllers\Admin\MasyarakatController::class);
+
+        Route::get('/laporan', [\App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('laporan.index');
+        Route::post('/laporan-get', [\App\Http\Controllers\Admin\LaporanController::class, 'laporan'])->name('laporan.get');
+        Route::post('/laporan/export', [\App\Http\Controllers\Admin\LaporanController::class, 'export'])->name('laporan.export');
+
+        // Route untuk kelola perumahan
+        Route::get('/perumahan', [\App\Http\Controllers\Admin\PerumahanController::class, 'index'])->name('perumahan.index');
+        Route::get('/perumahan/create', [\App\Http\Controllers\Admin\PerumahanController::class, 'create'])->name('perumahan.create');
+        Route::post('/perumahan/store', [\App\Http\Controllers\Admin\PerumahanController::class, 'store'])->name('perumahan.store');
+        Route::get('/perumahan/edit/{id}', [\App\Http\Controllers\Admin\PerumahanController::class, 'edit'])->name('perumahan.edit');
+        Route::put('/perumahan/update/{id}', [\App\Http\Controllers\Admin\PerumahanController::class, 'update'])->name('perumahan.update');
+        Route::delete('/perumahan/delete/{id}', [\App\Http\Controllers\Admin\PerumahanController::class, 'destroy'])->name('perumahan.delete');
+
+        // Logout Admin
         Route::get('/logout', [\App\Http\Controllers\Admin\AdminController::class, 'logout'])->name('admin.logout');
+    });
+
+    Route::middleware('isPetugas')->group(function() {
+        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
         // Pengaduan
         Route::get('pengaduan/{status}', [\App\Http\Controllers\Admin\PengaduanController::class, 'index'])->name('pengaduan.index');
@@ -70,9 +82,7 @@ Route::prefix('admin')->group( function() {
         // Tanggapan
         Route::post('tanggapan', [\App\Http\Controllers\Admin\TanggapanController::class, 'response'])->name('tanggapan');
 
-     });
-    Route::middleware(['isGuest'])->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'formLogin'])->name('admin.masuk');
-        Route::post('/login', [\App\Http\Controllers\Admin\AdminController::class, 'login'])->name('admin.login');
+        // Logout Petugas
+        Route::get('/logout', [\App\Http\Controllers\Admin\AdminController::class, 'logout'])->name('admin.logout');
     });
 });

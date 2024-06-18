@@ -18,9 +18,9 @@ class IsPetugas
     public function handle(Request $request, Closure $next)
     {
         if (Auth::guard('admin')->check()) {
-            if (Auth::guard('admin')->user()->roles == 'petugas') {
-                return $next($request);
-            } elseif (Auth::guard('admin')->user()->roles == 'admin') {
+            $userRoles = Auth::guard('admin')->user()->roles;
+
+            if ($userRoles == 'petugas' || $userRoles == 'admin' || $userRoles == 'ketuarw') {
                 return $next($request);
             }
         }

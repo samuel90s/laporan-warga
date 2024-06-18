@@ -10,9 +10,8 @@ class Pengaduan extends Model
     use HasFactory;
 
     protected $table = 'pengaduan';
-
     protected $primaryKey = 'id_pengaduan';
-
+    protected $dates = ['tgl_pengaduan', 'tgl_kejadian'];
     protected $fillable = [
         'tgl_pengaduan',
         'nik',
@@ -24,7 +23,13 @@ class Pengaduan extends Model
         'status',
     ];
 
-    public function user() {
-        return $this->hasOne(Masyarakat::class, 'nik', 'nik');
+    public function tanggapan()
+    {
+        return $this->hasOne(Tanggapan::class, 'id_pengaduan', 'id_pengaduan');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(Masyarakat::class, 'nik', 'nik');
     }
 }

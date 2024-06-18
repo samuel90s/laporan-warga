@@ -9,35 +9,39 @@ use App\Models\Tanggapan;
 
 class PengaduanController extends Controller
 {
-    public function index($status) {
-        $pengaduan = Pengaduan::where('status', $status)->orderBy('tgl_pengaduan', 'desc')->get();
-        // dd($satus);
-        
+    public function index($status)
+    {
+        $pengaduan = Pengaduan::where('status', $status)
+                        ->orderBy('tgl_pengaduan', 'desc')
+                        ->get();
+
         return view('pages.admin.pengaduan.index', compact('pengaduan', 'status'));
     }
-    
-    public function show($id_pengaduan) {
-        $pengaduan = Pengaduan::where('id_pengaduan', $id_pengaduan)->first();
+
+    public function show($id_pengaduan)
+    {
+        $pengaduan = Pengaduan::find($id_pengaduan);
+
+        if (!$pengaduan) {
+            abort(404);
+        }
 
         $tanggapan = Tanggapan::where('id_pengaduan', $id_pengaduan)->first();
 
-        return view('pages.admin.pengaduan.show', [
-            'pengaduan' => $pengaduan,
-            'tanggapan' => $tanggapan
-        ]);
+        return view('pages.admin.pengaduan.show', compact('pengaduan', 'tanggapan'));
     }
 
-    public function destroy(Request $request, $id_pengaduan) {
-
-        if($id_pengaduan = 'id_pengaduan') {
-            $id_pengaduan = $request->id_pengaduan;
-        }
-
+    public function destroy(Request $request, $id_pengaduan)
+    {
         $pengaduan = Pengaduan::find($id_pengaduan);
+
+        if (!$pengaduan) {
+            abort(404);
+        }
 
         $pengaduan->delete();
 
-        if($request->ajax()) {
+        if ($request->ajax()) {
             return 'success';
         }
 

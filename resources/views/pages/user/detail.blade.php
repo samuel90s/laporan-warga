@@ -1,6 +1,8 @@
+<!-- resources/views/pengaduan/detail.blade.php -->
+
 @extends('layouts.app')
 
-@section('title', 'Pengaduan')
+@section('title', 'Detail Pengaduan')
 
 @section('content')
     <main id="main" class="martop">
@@ -11,81 +13,59 @@
                         <div class="card card-responsive p-4 border-0 shadow rounded mx-auto">
                             <h5><b>Data Pelapor</b></h5>
                             <p>
-                                {{ $pengaduan->user->name }} <br>
-                                {{ Carbon\Carbon::parse($pengaduan->tgl_kejadian)->format('d F Y') }} <br>
+                                {{ optional($pengaduan->user)->name ?? 'Nama Tidak Tersedia' }} <br>
+                                {{ optional($pengaduan->tgl_kejadian)->format('d F Y') }} <br>
                             </p>
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="card card-responsive p-4 border-0 shadow rounded mx-auto text-center">
-                            <img src="{{ $pengaduan->foto }}" alt="">
+                            @if ($pengaduan->foto)
+                                <img src="{{ Storage::url($pengaduan->foto) }}" alt="Foto Pengaduan"
+                                    style="max-width: 100%; height: auto;">
+                            @else
+                                <p class="text-muted">Foto tidak tersedia</p>
+                            @endif
                             <h3>{{ $pengaduan->judul_laporan }}</h3>
                             <p>
-                                @if ($pengaduan->status == '0')
-                                    <span class="text-sm text-white p-1 bg-danger">Pending</span>
-                                @elseif($pengaduan->status == 'proses')
-                                    <span class="text-sm text-white p-1 bg-warning">Proses</span>
-                                @else
-                                    <span class="text-sm text-white p-1 bg-success">Selesai</span>
-                                @endif
+                                @php
+                                    $statusColor = [
+                                        '0' => 'danger',
+                                        'proses' => 'warning',
+                                        'selesai' => 'success',
+                                    ];
+                                @endphp
+                                <span class="text-sm text-white p-1 bg-{{ $statusColor[$pengaduan->status] ?? 'danger' }}">
+                                    {{ ucfirst($pengaduan->status) }}
+                                </span>
                             </p>
                             <p>{{ $pengaduan->isi_laporan }}</p>
                             <span class="text-sm badge badge-warning">Proses</span>
                         </div>
                     </div>
                 </div>
+
+                @if ($pengaduan->tanggapan)
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Tanggapan Petugas</h5>
+                            <p>
+                                <b>Petugas:</b>
+                                {{ $pengaduan->tanggapan->petugas->nama_petugas ?? 'Petugas Tidak Tersedia' }} <br>
+                                <b>Tanggal Tanggapan:</b>
+                                {{ $pengaduan->tanggapan->tgl_tanggapan ? \Carbon\Carbon::parse($pengaduan->tanggapan->tgl_tanggapan)->format('d F Y') : 'Tanggal Tidak Tersedia' }}
+                                <br>
+                                <b>Isi Tanggapan:</b> {{ $pengaduan->tanggapan->tanggapan }} <br>
+                            </p>
+                        </div>
+                    </div>
+                @else
+                    <div class="alert alert-warning" role="alert">
+                        Belum ada tanggapan dari petugas untuk pengaduan ini.
+                    </div>
+                @endif
+
             </div>
         </section>
     </main>
-@endsection
-
-@section('scripts')
-    <!-- Your script section here -->
-    @if (!auth('masyarakat')->check())
-        <script>
-            Swal.fire({
-                title: 'Peringatan!',
-                text: "Anda harus login terlebih dahulu!",
-                icon: 'warning',
-                confirmButtonColor: '#28B7B5',
-                confirmButtonText: 'Masuk',
-                allowOutsideClick: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '{{ route('user.masuk') }}';
-                } else {
-                    window.location.href = '{{ route('user.masuk') }}';
-                }
-            });
-        </script>
-    @elseif(auth('masyarakat')->user()->email_verified_at == null && auth('masyarakat')->user()->telp_verified_at == null)
-        <script>
-            Swal.fire({
-                title: 'Peringatan!',
-                text: "Akun belum diverifikasi!",
-                icon: 'warning',
-                confirmButtonColor: '#28B7B5',
-                confirmButtonText: 'Ok',
-                allowOutsideClick: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '{{ route('user.masuk') }}';
-                } else {
-                    window.location.href = '{{ route('user.masuk') }}';
-                }
-            });
-        </script>
-    @endif
-
-    @if (session()->has('pengaduan'))
-        <script>
-            Swal.fire({
-                title: 'Pemberitahuan!',
-                text: '{{ session()->get('pengaduan') }}',
-                icon: '{{ session()->get('type') }}',
-                confirmButtonColor: '#28B7B5',
-                confirmButtonText: 'OK',
-            });
-        </script>
-    @endif
 @endsection

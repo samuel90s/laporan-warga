@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use App\Providers\RouteServiceProvider;
@@ -19,16 +18,15 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, ...$guards)
     {
-        // $guards = empty($guards) ? [null] : $guards;
-
-        // foreach ($guards as $guard) {
-        //     if (Auth::guard($guard)->check()) {
-        //         return redirect(RouteServiceProvider::HOME);
-        //     }
-        // }
-
-        if (!Auth::guard('masyarakat')->check()) {
-            return $next($request);
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role == 'admin') {
+                return redirect()->route('dashboard');
+            } elseif ($user->role == 'petugas') {
+                return redirect()->route('dashboard');
+            } elseif ($user->role == 'masyarakat') {
+                return redirect('/home'); // Or any other route for 'masyarakat' users
+            }
         }
 
         return $next($request);

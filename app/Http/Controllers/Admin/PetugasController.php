@@ -49,7 +49,7 @@ class PetugasController extends Controller
             'username' => ['required', 'string', 'regex:/^\S*$/u', 'unique:petugas', 'unique:masyarakat,username'],
             'password' => ['required', 'string', 'min:6'],
             'telp' => ['required'],
-            'roles' => ['required', 'in:admin,petugas'],
+            'roles' => ['required', 'in:admin,petugas,ketuarw'],
         ]);
 
         if ($validate->fails()) {
@@ -115,7 +115,7 @@ class PetugasController extends Controller
             'nama_petugas' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'regex:/^\S*$/u', Rule::unique('petugas')->ignore($id_petugas, 'id_petugas'), 'unique:masyarakat,username'],
             'telp' => ['required'],
-            'roles' => ['required', 'in:admin,petugas'],
+            'roles' => ['required', 'in:admin,petugas,ketuarw'],
         ]);
 
         if ($validate->fails()) {
