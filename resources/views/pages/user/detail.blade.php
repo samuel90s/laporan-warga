@@ -15,6 +15,7 @@
                             <p>
                                 {{ optional($pengaduan->user)->name ?? 'Nama Tidak Tersedia' }} <br>
                                 {{ optional($pengaduan->tgl_kejadian)->format('d F Y') }} <br>
+                                <b>Category Pengaduan:</b> {{ $pengaduan->category_pengaduan }}
                             </p>
                         </div>
                     </div>

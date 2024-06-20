@@ -128,17 +128,6 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <!-- Dropdown untuk memilih perumahan -->
-                                <div class="form-group">
-                                    <label for="perumahan_id">Pilih Perumahan</label>
-                                    <select name="perumahan_id" class="form-control">
-                                        <option value="">-- Pilih Perumahan --</option>
-                                        @foreach ($perumahans as $perumahan)
-                                            <option value="{{ $perumahan->id }}">{{ $perumahan->nama_perumahan }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
                                 <div class="form-group">
                                     <div class="input-group input-group-merge input-group-alternative mb-3">
                                         <div class="input-group-prepend">
@@ -288,6 +277,17 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <!-- <div class="text-muted font-italic"><small>password strength: <span class="text-success font-weight-700">strong</span></small></div> -->
+                                <!-- <div class="row my-4">
+                                <div class="col-12">
+                                  <div class="custom-control custom-control-alternative custom-checkbox">
+                                    <input class="custom-control-input" id="customCheckRegister" type="checkbox">
+                                    <label class="custom-control-label" for="customCheckRegister">
+                                      <span class="text-muted">I agree with the <a href="#!">Privacy Policy</a></span>
+                                    </label>
+                                  </div>
+                                </div>
+                              </div> -->
                                 <div class="text-center">
                                     <button type="submit" class="btn btn-primary mt-4">Buat Akun</button>
                                 </div>

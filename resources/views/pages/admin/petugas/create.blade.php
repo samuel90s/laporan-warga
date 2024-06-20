@@ -14,11 +14,6 @@
                     <div class="col-lg-6 col-7">
                         <h6 class="h2 text-white d-inline-block mb-0">Tambah Petugas</h6>
                         <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
-                            {{-- <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
-                    <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Lihat</li>
-                    <li class="breadcrumb-item"><a href="#">Tambah Petugas</a></li>
-                  </ol> --}}
                         </nav>
                     </div>
                 </div>
@@ -56,7 +51,7 @@
                                 <select name="roles" id="roles" class="custom-select" required>
                                     <option value="" selected disabled>Pilih Roles</option>
                                     <option value="petugas">Petugas</option>
-                                    <option value="admin">Admin</option>
+                                    {{-- <option value="admin">Admin</option> --}}
                                     <option value="ketuarw">Ketua RW</option>
                                 </select>
                             </div>

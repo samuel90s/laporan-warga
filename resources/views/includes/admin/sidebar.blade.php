@@ -63,7 +63,8 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('petugas.index') }} ">
+                            <a class="nav-link {{ request()->segment(2) == 'perumahan' ? 'active' : '' }}"
+                                href="{{ route('perumahan.index') }}">
                                 <i class="fas fa-home text-info"></i>
                                 <span class="nav-link-text">Perumahan</span>
                             </a>

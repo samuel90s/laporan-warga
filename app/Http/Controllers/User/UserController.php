@@ -8,6 +8,7 @@ use App\Models\Masyarakat;
 use App\Models\Pengaduan;
 use App\Models\Petugas;
 use App\Models\Province;
+use App\Models\Perumahan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -139,7 +140,8 @@ class UserController extends Controller
     public function register()
     {
         $provinces = Province::all();
-        return view('pages.user.register', compact('provinces'));
+        $perumahans = Perumahan::all();
+        return view('pages.user.register', compact('provinces','perumahans'));
     }
 
     public function register_post(Request $request)
@@ -162,6 +164,7 @@ class UserController extends Controller
             'regency_id' => ['required'],
             'district_id' => ['required'],
             'village_id' => ['required'],
+            'perumahan_id' => ['required'],
         ]);
 
         if ($validate->fails()) {
@@ -185,6 +188,7 @@ class UserController extends Controller
             'regency_id' => $data['regency_id'],
             'district_id' => $data['district_id'],
             'village_id' => $data['village_id'],
+            'perumahan_id' => $data['perumahan_id'],
         ]);
 
         $masyarakat = Masyarakat::where('email', $data['email'])->first();
@@ -216,6 +220,7 @@ class UserController extends Controller
             'isi_laporan' => ['required'],
             'tgl_kejadian' => ['required'],
             'lokasi_kejadian' => ['required'],
+            'category_pengaduan' => ['required'],
             // 'id_kategori' => ['required'],
         ]);
 
@@ -240,6 +245,7 @@ class UserController extends Controller
             // 'id_kategori' => $data['id_kategori'],
             'foto' => $data['foto'] ?? 'assets/pengaduan/tambakmekar.png',
             'status' => '0',
+            'category_pengaduan' => $data['category_pengaduan'],
         ]);
 
         if ($pengaduan) {

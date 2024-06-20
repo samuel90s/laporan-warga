@@ -47,4 +47,21 @@ class PengaduanController extends Controller
 
         return redirect()->route('pengaduan.index');
     }
+
+    public function verifikasi(Request $request)
+    {
+        $id_pengaduan = $request->id_pengaduan;
+
+        $pengaduan = Pengaduan::find($id_pengaduan);
+
+        if (!$pengaduan) {
+            return response()->json('error', 404);
+        }
+
+        // Lakukan proses verifikasi pengaduan disini
+        $pengaduan->status = 'proses';
+        $pengaduan->save();
+
+        return response()->json('success');
+    }
 }

@@ -47,7 +47,26 @@
                                 </div>
                             @enderror
                         </div>
-
+                        <div class="form-group mb-3">
+                            <label for="category_pengaduan" class="form-label">Category Pengaduan</label>
+                            <select name="category_pengaduan" id="category_pengaduan"
+                                class="form-control @error('category_pengaduan') is-invalid @enderror" required>
+                                <option value="" disabled selected>Pilih Category Pengaduan</option>
+                                <option value="Kebersihan"
+                                    {{ old('category_pengaduan') == 'Kebersihan' ? 'selected' : '' }}>Kebersihan</option>
+                                <option value="Keamanan" {{ old('category_pengaduan') == 'Keamanan' ? 'selected' : '' }}>
+                                    Keamanan</option>
+                                <option value="Fasilitas" {{ old('category_pengaduan') == 'Fasilitas' ? 'selected' : '' }}>
+                                    Fasilitas</option>
+                                <option value="Lainnya" {{ old('category_pengaduan') == 'Lainnya' ? 'selected' : '' }}>
+                                    Lainnya</option>
+                            </select>
+                            @error('category_pengaduan')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                         <div class="form-group mb-3">
                             <label for="lokasi_kejadian" class="form-label">Lokasi Kejadian</label>
                             <textarea name="lokasi_kejadian" id="lokasi_kejadian" placeholder="Ketik Lokasi Kejadian" rows="3"

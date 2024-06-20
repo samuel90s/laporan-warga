@@ -9,12 +9,11 @@ class Perumahan extends Model
 {
     use HasFactory;
 
-    protected $table = 'perumahans'; // Sesuaikan dengan nama tabel
+    protected $table = 'perumahans'; // Sesuaikan dengan nama tabel di database
 
     protected $fillable = [
-        'nama',
-        // Tambahkan kolom lain yang ingin diisi secara massal (fillable)
+        'nama_perumahan',
+        'alamat',
+        'contact',
     ];
-
-    // Jika perlu, definisikan relasi dengan model lain di sini
 }

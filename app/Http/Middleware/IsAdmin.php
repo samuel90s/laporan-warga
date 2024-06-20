@@ -20,7 +20,6 @@ class IsAdmin
         if (Auth::guard('admin')->check() && Auth::guard('admin')->user()->roles == 'admin') {
             return $next($request);
         }
-
         return redirect()->route('admin.masuk');
     }
 }

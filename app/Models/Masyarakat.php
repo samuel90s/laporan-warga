@@ -1,4 +1,5 @@
 <?php
+// app/Models/Masyarakat.php
 
 namespace App\Models;
 
@@ -9,11 +10,11 @@ class Masyarakat extends Authenticatable
 {
     use HasFactory;
 
-    protected $table = 'masyarakat';
+    protected $table = 'masyarakat'; // Nama tabel di database
 
-    protected $primaryKey = 'nik';
+    protected $primaryKey = 'nik'; // Primary key dari tabel
 
-    public $incrementing = false;
+    public $incrementing = false; // Mengindikasikan apakah primary key auto increment atau tidak
 
     protected $fillable = [
         'nik',
@@ -32,6 +33,16 @@ class Masyarakat extends Authenticatable
         'regency_id',
         'district_id',
         'village_id',
+        'perumahan_id', // Menambahkan kolom perumahan_id untuk relasi
     ];
 
+    /**
+     * Relationship with Perumahan model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function perumahan()
+    {
+        return $this->belongsTo(Perumahan::class, 'perumahan_id');
+    }
 }

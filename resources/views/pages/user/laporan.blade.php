@@ -25,6 +25,7 @@
                                             class="btn btn-primary">Lihat Detail</a>
                                     </div>
                                     <div class="card-footer">
+                                        <b>Category Pengaduan:</b> {{ $item->category_pengaduan }}<br>
                                         <small class="text-muted">Tanggal Kejadian:
                                             {{ Carbon\Carbon::parse($item->tgl_kejadian)->isoFormat('LL') }}</small>
                                     </div>

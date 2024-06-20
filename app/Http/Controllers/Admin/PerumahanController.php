@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Perumahan; // Sesuaikan dengan nama model yang benar
+use App\Models\Perumahan;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class PerumahanController extends Controller
 {
     public function index()
     {
-        $perumahans = Perumahan::all();
+        $perumahans = Perumahan::all(); // Mengambil semua data perumahan
 
         return view('pages.admin.perumahan.index', compact('perumahans'));
     }
@@ -27,18 +27,16 @@ class PerumahanController extends Controller
         $data = $request->all();
 
         $validate = Validator::make($data, [
-            'nama' => ['required', 'string', 'max:255'],
-            // Tambahkan validasi sesuai kebutuhan
+            'nama_perumahan' => ['required', 'string', 'max:255'],
+            'alamat' => ['required', 'string', 'max:500'],
+            'contact' => ['nullable', 'string', 'max:20'],
         ]);
 
         if ($validate->fails()) {
-            return redirect()->back()->withErrors($validate);
+            return redirect()->back()->withErrors($validate)->withInput();
         }
 
-        Perumahan::create([
-            'nama' => $data['nama'],
-            // Tambahkan field lain yang perlu disimpan
-        ]);
+        Perumahan::create($data);
 
         Alert::success('Berhasil', 'Perumahan telah ditambahkan!');
         return redirect()->route('perumahan.index');
@@ -56,19 +54,17 @@ class PerumahanController extends Controller
         $data = $request->all();
 
         $validate = Validator::make($data, [
-            'nama' => ['required', 'string', 'max:255'],
-            // Tambahkan validasi sesuai kebutuhan
+            'nama_perumahan' => ['required', 'string', 'max:255'],
+            'alamat' => ['required', 'string', 'max:500'],
+            'contact' => ['nullable', 'string', 'max:20'],
         ]);
 
         if ($validate->fails()) {
-            return redirect()->back()->withErrors($validate);
+            return redirect()->back()->withErrors($validate)->withInput();
         }
 
         $perumahan = Perumahan::findOrFail($id);
-        $perumahan->update([
-            'nama' => $data['nama'],
-            // Update field lain yang diperlukan
-        ]);
+        $perumahan->update($data);
 
         Alert::success('Berhasil', 'Perumahan berhasil diupdate!');
         return redirect()->route('perumahan.index');

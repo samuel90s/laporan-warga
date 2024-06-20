@@ -59,13 +59,14 @@ Route::prefix('admin')->group(function() {
         Route::post('/laporan-get', [\App\Http\Controllers\Admin\LaporanController::class, 'laporan'])->name('laporan.get');
         Route::post('/laporan/export', [\App\Http\Controllers\Admin\LaporanController::class, 'export'])->name('laporan.export');
 
-        // Route untuk kelola perumahan
-        Route::get('/perumahan', [\App\Http\Controllers\Admin\PerumahanController::class, 'index'])->name('perumahan.index');
-        Route::get('/perumahan/create', [\App\Http\Controllers\Admin\PerumahanController::class, 'create'])->name('perumahan.create');
-        Route::post('/perumahan/store', [\App\Http\Controllers\Admin\PerumahanController::class, 'store'])->name('perumahan.store');
-        Route::get('/perumahan/edit/{id}', [\App\Http\Controllers\Admin\PerumahanController::class, 'edit'])->name('perumahan.edit');
-        Route::put('/perumahan/update/{id}', [\App\Http\Controllers\Admin\PerumahanController::class, 'update'])->name('perumahan.update');
-        Route::delete('/perumahan/delete/{id}', [\App\Http\Controllers\Admin\PerumahanController::class, 'destroy'])->name('perumahan.delete');
+        Route::prefix('perumahan')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\PerumahanController::class, 'index'])->name('perumahan.index');
+            Route::get('/create', [\App\Http\Controllers\Admin\PerumahanController::class, 'create'])->name('perumahan.create');
+            Route::post('/store', [\App\Http\Controllers\Admin\PerumahanController::class, 'store'])->name('perumahan.store');
+            Route::get('/edit/{id}', [\App\Http\Controllers\Admin\PerumahanController::class, 'edit'])->name('perumahan.edit');
+            Route::put('/update/{id}', [\App\Http\Controllers\Admin\PerumahanController::class, 'update'])->name('perumahan.update');
+            Route::delete('/delete/{id}', [\App\Http\Controllers\Admin\PerumahanController::class, 'destroy'])->name('perumahan.delete');
+        });
 
         // Logout Admin
         Route::get('/logout', [\App\Http\Controllers\Admin\AdminController::class, 'logout'])->name('admin.logout');
@@ -78,7 +79,6 @@ Route::prefix('admin')->group(function() {
         Route::get('pengaduan/{status}', [\App\Http\Controllers\Admin\PengaduanController::class, 'index'])->name('pengaduan.index');
         Route::get('pengaduan/show/{id_pengaduan}', [\App\Http\Controllers\Admin\PengaduanController::class, 'show'])->name('pengaduan.show');
         Route::delete('pengaduan/delete/{id_pengaduan}', [\App\Http\Controllers\Admin\PengaduanController::class, 'destroy'])->name('pengaduan.delete');
-
         // Tanggapan
         Route::post('tanggapan', [\App\Http\Controllers\Admin\TanggapanController::class, 'response'])->name('tanggapan');
 

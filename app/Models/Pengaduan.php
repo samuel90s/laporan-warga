@@ -21,6 +21,7 @@ class Pengaduan extends Model
         'lokasi_kejadian',
         'foto',
         'status',
+        'category_pengaduan',
     ];
 
     public function tanggapan()

@@ -1,209 +1,167 @@
-@extends('layouts.app')
-@section('title', 'Perumahan')
+@extends('layouts.admin')
 
+@section('title', 'Perumahan')
 
 @push('addon-style')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
 @endpush
+
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">{{ __('Register Perumahan') }}</div>
-
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('perumahan.store') }}">
-                            @csrf
-
-                            <div class="form-group row">
-                                <label for="nama_perumahan"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('Nama Perumahan') }}</label>
-
-                                <div class="col-md-6">
-                                    <input id="nama_perumahan" type="text"
-                                        class="form-control @error('nama_perumahan') is-invalid @enderror"
-                                        name="nama_perumahan" value="{{ old('nama_perumahan') }}" required
-                                        autocomplete="nama_perumahan" autofocus>
-
-                                    @error('nama_perumahan')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="province_id"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('Province') }}</label>
-
-                                <div class="col-md-6">
-                                    <select name="province_id" id="province_id"
-                                        class="form-control @error('province_id') is-invalid @enderror" required>
-                                        <option value="">-- Pilih Provinsi --</option>
-                                        @foreach ($provinces as $province)
-                                            <option value="{{ $province->id }}">{{ $province->name }}</option>
-                                        @endforeach
-                                    </select>
-
-                                    @error('province_id')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="regency_id"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('Kota/Kabupaten') }}</label>
-
-                                <div class="col-md-6">
-                                    <select name="regency_id" id="regency_id"
-                                        class="form-control @error('regency_id') is-invalid @enderror" required>
-                                        <option value="">-- Pilih Kota/Kabupaten --</option>
-                                    </select>
-
-                                    @error('regency_id')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="district_id"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('Kecamatan') }}</label>
-
-                                <div class="col-md-6">
-                                    <select name="district_id" id="district_id"
-                                        class="form-control @error('district_id') is-invalid @enderror" required>
-                                        <option value="">-- Pilih Kecamatan --</option>
-                                    </select>
-
-                                    @error('district_id')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="village_id"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('Desa/Kelurahan') }}</label>
-
-                                <div class="col-md-6">
-                                    <select name="village_id" id="village_id"
-                                        class="form-control @error('village_id') is-invalid @enderror" required>
-                                        <option value="">-- Pilih Desa/Kelurahan --</option>
-                                    </select>
-
-                                    @error('village_id')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="alamat"
-                                    class="col-md-4 col-form-label text-md-right">{{ __('Alamat Perumahan') }}</label>
-
-                                <div class="col-md-6">
-                                    <textarea id="alamat" class="form-control @error('alamat') is-invalid @enderror" name="alamat" required>{{ old('alamat') }}</textarea>
-
-                                    @error('alamat')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-0">
-                                <div class="col-md-6 offset-md-4">
-                                    <button type="submit" class="btn btn-primary">
-                                        {{ __('Register') }}
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+    <!-- Header -->
+    <div class="header bg-primary pb-6">
+        <div class="container-fluid">
+            <div class="header-body">
+                <div class="row align-items-center py-4">
+                    <div class="col-lg-6 col-7">
+                        <h6 class="h2 text-white d-inline-block mb-0">Perumahan</h6>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Page content -->
+    <div class="container-fluid mt--6">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <!-- Card header -->
+                    <div class="card-header border-0 d-flex justify-content-between">
+                        <h3 class="mb-0">Data Perumahan</h3>
+                        <a href="{{ route('perumahan.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah
+                            Perumahan</a>
+                    </div>
+                    <!-- Light table -->
+                    <div class="table-responsive">
+                        <table class="table align-items-center table-flush" id="perumahanTable">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" class="sort" data-sort="no">No</th>
+                                    <th scope="col" class="sort" data-sort="nama_perumahan">Nama Perumahan</th>
+                                    <th scope="col" class="sort" data-sort="alamat">Alamat</th>
+                                    <th scope="col" class="sort" data-sort="contact">Contact</th>
+                                    <th scope="col" class="sort" data-sort="action">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="list">
+                                @foreach ($perumahans as $k => $perumahan)
+                                    <tr>
+                                        <td>{{ $k + 1 }}</td>
+                                        <td>{{ $perumahan->nama_perumahan }}</td>
+                                        <td>{{ $perumahan->alamat }}</td>
+                                        <td>{{ $perumahan->contact }}</td>
+                                        <td style="width: 100px;">
+                                            <a href="{{ route('perumahan.edit', $perumahan->id) }}"
+                                                class="btn btn-sm btn-warning">Edit</a>
+                                            <a href="#" data-id="{{ $perumahan->id }}"
+                                                class="btn btn-sm btn-danger perumahanDelete">Hapus</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Card footer -->
+                    <div class="card-footer py-4">
+                        <nav aria-label="...">
+                            <ul class="pagination justify-content-end mb-0">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">
+                                        <i class="fas fa-angle-left"></i>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">
+                                        <i class="fas fa-angle-right"></i>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('addon-script')
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 -->
+
     <script>
         $(document).ready(function() {
-            $('#province_id').on('change', function() {
-                var province_id = $(this).val();
-                if (province_id) {
-                    $.ajax({
-                        type: 'POST',
-                        url: "{{ route('get-regencies') }}",
-                        data: {
-                            province_id: province_id,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function(data) {
-                            $('#regency_id').html(data);
-                            $('#district_id').html(
-                                '<option value="">-- Pilih Kecamatan --</option>');
-                            $('#village_id').html(
-                                '<option value="">-- Pilih Desa/Kelurahan --</option>');
-                        }
-                    });
-                } else {
-                    $('#regency_id').html('<option value="">-- Pilih Kota/Kabupaten --</option>');
-                    $('#district_id').html('<option value="">-- Pilih Kecamatan --</option>');
-                    $('#village_id').html('<option value="">-- Pilih Desa/Kelurahan --</option>');
-                }
-            });
+            $('#perumahanTable').DataTable();
 
-            $('#regency_id').on('change', function() {
-                var regency_id = $(this).val();
-                if (regency_id) {
-                    $.ajax({
-                        type: 'POST',
-                        url: "{{ route('get-districts') }}",
-                        data: {
-                            regency_id: regency_id,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function(data) {
-                            $('#district_id').html(data);
-                            $('#village_id').html(
-                                '<option value="">-- Pilih Desa/Kelurahan --</option>');
-                        }
-                    });
-                } else {
-                    $('#district_id').html('<option value="">-- Pilih Kecamatan --</option>');
-                    $('#village_id').html('<option value="">-- Pilih Desa/Kelurahan --</option>');
-                }
-            });
+            $(document).on('click', '.perumahanDelete', function(e) {
+                e.preventDefault();
+                let id = $(this).data('id');
 
-            $('#district_id').on('change', function() {
-                var district_id = $(this).val();
-                if (district_id) {
-                    $.ajax({
-                        type: 'POST',
-                        url: "{{ route('get-villages') }}",
-                        data: {
-                            district_id: district_id,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function(data) {
-                            $('#village_id').html(data);
-                        }
-                    });
-                } else {
-                    $('#village_id').html('<option value="">-- Pilih Desa/Kelurahan --</option>');
-                }
+                Swal.fire({
+                    title: 'Peringatan!',
+                    text: "Apakah Anda yakin akan menghapus perumahan?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28B7B5',
+                    cancelButtonColor: '#DC3545',
+                    confirmButtonText: 'OK',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "DELETE",
+                            url: '{{ route('perumahan.delete', 'id') }}'.replace('id', id),
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                "id": id,
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    // Menghapus baris dari tabel setelah penghapusan berhasil
+                                    $('#perumahanTable').DataTable().row($(
+                                        '#perumahanTable').find('a[data-id="' +
+                                        id + '"]').parents('tr')).remove().draw();
+
+                                    // Tampilkan SweetAlert bahwa perumahan berhasil dihapus
+                                    Swal.fire({
+                                        title: 'Berhasil!',
+                                        text: "Perumahan berhasil dihapus!",
+                                        icon: 'success',
+                                        confirmButtonColor: '#28B7B5',
+                                        confirmButtonText: 'OK'
+                                    });
+                                } else {
+                                    // Menampilkan alert bahwa gagal menghapus hanya jika respons tidak berhasil
+                                    Swal.fire({
+                                        title: 'Gagal!',
+                                        text: "Gagal menghapus perumahan.",
+                                        icon: 'error',
+                                        confirmButtonColor: '#28B7B5',
+                                        confirmButtonText: 'OK'
+                                    });
+                                }
+                            },
+                            error: function(data) {
+                                // Menampilkan alert bahwa terjadi kesalahan saat menghapus
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: "Terjadi kesalahan saat menghapus perumahan.",
+                                    icon: 'error',
+                                    confirmButtonColor: '#28B7B5',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>
-@endsection
+@endpush
