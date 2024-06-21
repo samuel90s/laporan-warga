@@ -9,6 +9,7 @@ class Petugas extends Authenticatable
 {
     use HasFactory;
 
+    protected $table = 'petugas';
     protected $primaryKey = 'id_petugas';
 
     protected $fillable = [
@@ -16,6 +17,12 @@ class Petugas extends Authenticatable
         'username',
         'password',
         'telp',
-        'roles'
+        'roles',
+        'perumahan_id',
     ];
+
+    public function perumahan()
+    {
+        return $this->belongsTo(Perumahan::class, 'perumahan_id', 'id');
+    }
 }

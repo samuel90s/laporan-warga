@@ -1,10 +1,11 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class Pengaduan extends Model
 {
     use HasFactory;
@@ -22,6 +23,7 @@ class Pengaduan extends Model
         'foto',
         'status',
         'category_pengaduan',
+        'perumahan_id',
     ];
 
     public function tanggapan()
@@ -33,4 +35,10 @@ class Pengaduan extends Model
     {
         return $this->belongsTo(Masyarakat::class, 'nik', 'nik');
     }
+
+    public function perumahan(): BelongsTo
+    {
+        return $this->belongsTo(Perumahan::class, 'perumahan_id', 'id');
+    }
 }
+

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Petugas;
+use App\Models\Perumahan;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Validation\Rule;
 
@@ -19,8 +20,7 @@ class PetugasController extends Controller
      */
     public function index()
     {
-        $petugas = Petugas::all();
-
+        $petugas = Petugas::with('perumahan')->get();
         return view('pages.admin.petugas.index', compact('petugas'));
     }
 
@@ -31,7 +31,8 @@ class PetugasController extends Controller
      */
     public function create()
     {
-        return view('pages.admin.petugas.create');
+        $perumahan = Perumahan::all();
+        return view('pages.admin.petugas.create', compact('perumahan'));
     }
 
     /**
@@ -49,6 +50,7 @@ class PetugasController extends Controller
             'username' => ['required', 'string', 'regex:/^\S*$/u', 'unique:petugas', 'unique:masyarakat,username'],
             'password' => ['required', 'string', 'min:6'],
             'telp' => ['required'],
+            'perumahan_id' => 'nullable|exists:perumahans,id',
             'roles' => ['required', 'in:admin,petugas,ketuarw'],
         ]);
 
@@ -58,7 +60,7 @@ class PetugasController extends Controller
 
         $username = Petugas::where('username', $data['username'])->first();
 
-        if($username){
+        if ($username) {
             return redirect()->back()->with(['notif' => 'Username Telah Digunakan!']);
         }
 
@@ -68,45 +70,27 @@ class PetugasController extends Controller
             'password' => Hash::make($data['password']),
             'telp' => $data['telp'],
             'roles' => $data['roles'],
-
+            'perumahan_id' => $data['perumahan_id'],
         ]);
-
 
         Alert::success('Berhasil', 'Petugas telah ditambahkan!');
         return redirect()->route('petugas.index');
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $id_petugas
      * @return \Illuminate\Http\Response
      */
     public function edit($id_petugas)
     {
         $petugas = Petugas::where('id_petugas', $id_petugas)->first();
+        $perumahan = Perumahan::all(); // Pastikan ini ditambahkan untuk mendapatkan semua perumahan
 
-        return view('pages.admin.petugas.edit', compact('petugas'));
+        return view('pages.admin.petugas.edit', compact('petugas', 'perumahan'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id_petugas)
     {
         $data = $request->all();
@@ -116,15 +100,16 @@ class PetugasController extends Controller
             'username' => ['required', 'string', 'regex:/^\S*$/u', Rule::unique('petugas')->ignore($id_petugas, 'id_petugas'), 'unique:masyarakat,username'],
             'telp' => ['required'],
             'roles' => ['required', 'in:admin,petugas,ketuarw'],
+            'perumahan_id' => 'nullable|exists:perumahans,id', // Pastikan perumahan_id menggunakan tabel 'perumahans'
         ]);
 
         if ($validate->fails()) {
             return redirect()->back()->withErrors($validate);
-        };
+        }
 
         $petugas = Petugas::find($id_petugas);
 
-        if($data['password'] != null){
+        if ($data['password'] != null) {
             $password = Hash::make($data['password']);
         }
 
@@ -134,9 +119,8 @@ class PetugasController extends Controller
             'password' => $password ?? $petugas->password,
             'telp' => $data['telp'],
             'roles' => $data['roles'],
-
+            'perumahan_id' => $data['perumahan_id'] ?? null, // Menangani perumahan_id yang tidak ada
         ]);
-
 
         Alert::success('Berhasil', 'Petugas berhasil diupdate!');
         return redirect()->route('petugas.index');
@@ -145,7 +129,7 @@ class PetugasController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int  $id_petugas
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id_petugas)
@@ -165,4 +149,5 @@ class PetugasController extends Controller
 
         return redirect()->route('petugas.index');
     }
+
 }

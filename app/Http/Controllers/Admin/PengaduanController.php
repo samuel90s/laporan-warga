@@ -4,19 +4,37 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Pengaduan;
 use App\Models\Tanggapan;
 
 class PengaduanController extends Controller
 {
     public function index($status)
-    {
+{
+    // Ambil informasi petugas yang sedang masuk
+    $user = Auth::guard('admin')->user();
+
+    // Cek peran pengguna
+    if ($user->roles === 'admin') {
+        // Admin dapat melihat semua pengaduan
         $pengaduan = Pengaduan::where('status', $status)
                         ->orderBy('tgl_pengaduan', 'desc')
                         ->get();
-
-        return view('pages.admin.pengaduan.index', compact('pengaduan', 'status'));
+    } elseif ($user->roles === 'ketuarw' || $user->roles === 'petugas') {
+        // Ketua RW atau Petugas hanya dapat melihat pengaduan dari perumahan yang sama
+        $pengaduan = Pengaduan::where('status', $status)
+                        ->where('perumahan_id', $user->perumahan_id)
+                        ->orderBy('tgl_pengaduan', 'desc')
+                        ->get();
+    } else {
+        // Akses tidak diizinkan untuk peran lain
+        abort(403, 'Unauthorized action.');
     }
+
+    return view('pages.admin.pengaduan.index', compact('pengaduan', 'status'));
+}
+
 
     public function show($id_pengaduan)
     {

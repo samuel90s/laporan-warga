@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'users',
+        'passwords' => 'masyarakats',
     ],
 
     /*
@@ -38,7 +38,7 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'masyarakats',
         ],
 
         'masyarakat' => [
@@ -49,6 +49,14 @@ return [
         'admin' => [
             'driver' => 'session',
             'provider' => 'admins',
+        ],
+        'petugas' => [
+            'driver' => 'session',
+            'provider' => 'petugas',
+        ],
+        'ketuarw' => [
+            'driver' => 'session',
+            'provider' => 'ketuarw',
         ],
     ],
 
@@ -84,6 +92,15 @@ return [
             'driver' => 'eloquent',
             'model' => \App\Models\Petugas::class,
         ],
+        'petugas' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Petugas::class, // Model untuk petugas
+        ],
+
+        'ketuarw' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Petugas::class, // Model untuk ketua rw
+        ],
 
         // 'users' => [
         //     'driver' => 'database',
@@ -107,8 +124,8 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'masyarakats' => [
+            'provider' => 'masyarakats',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

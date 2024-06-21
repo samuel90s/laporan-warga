@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\VerifikasiEmailUntukRegistrasiPengaduanMasyarakat;
 use App\Models\Masyarakat;
 use App\Models\Pengaduan;
+use App\Models\Tanggapan;
 use App\Models\Petugas;
 use App\Models\Province;
 use App\Models\Perumahan;
@@ -16,7 +17,11 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Carbon;
+use App\Notifications\ResetPasswordNotification;
+use Illuminate\Support\Str;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -31,17 +36,6 @@ class UserController extends Controller
             'proses' => $proses,
             'selesai' => $selesai,
         ]);
-    }
-
-    // public function tentang()
-    // {
-    //     return view('pages.user.about');
-    // }
-
-    public function pengaduan()
-    {
-        $pengaduan = Pengaduan::get();
-        return view('pages.user.pengaduan', compact('pengaduan'));
     }
 
     public function masuk()
@@ -204,15 +198,127 @@ class UserController extends Controller
 
         return redirect('/login');
     }
+// ====================================start pengaduan
+    public function pengaduan()
+    {
+        $pengaduan = Pengaduan::where('nik', Auth::guard('masyarakat')->user()->nik)->get();
+        return view('pages.user.pengaduan', compact('pengaduan'));
+    }
 
     public function storePengaduan(Request $request)
     {
+        // Validasi apakah masyarakat sudah login dan akunnya sudah diverifikasi
         if (!Auth::guard('masyarakat')->check()) {
             return redirect()->back()->with(['pengaduan' => 'Login dibutuhkan!', 'type' => 'error']);
         } elseif (Auth::guard('masyarakat')->user()->email_verified_at == null && Auth::guard('masyarakat')->user()->telp_verified_at == null) {
             return redirect()->back()->with(['pengaduan' => 'Akun belum diverifikasi!', 'type' => 'error']);
         }
 
+        // Validasi data input
+        $validate = Validator::make($request->all(), [
+            'judul_laporan' => ['required'],
+            'isi_laporan' => ['required'],
+            'tgl_kejadian' => ['required'],
+            'lokasi_kejadian' => ['required'],
+            'category_pengaduan' => ['required'],
+            'foto' => ['nullable', 'image', 'max:2048'] // Optional: tambahkan validasi untuk file foto
+        ]);
+
+        if ($validate->fails()) {
+            return redirect()->back()->withErrors($validate)->withInput();
+        }
+
+        // Simpan foto jika ada
+        $fotoPath = 'assets/pengaduan/default.jpg'; // Gambar default jika tidak ada foto yang diunggah
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('assets/pengaduan', 'public');
+        }
+
+        // Simpan pengaduan baru
+        $pengaduan = Pengaduan::create([
+            'tgl_pengaduan' => now(),
+            'nik' => Auth::guard('masyarakat')->user()->nik,
+            'judul_laporan' => $request->judul_laporan,
+            'isi_laporan' => $request->isi_laporan,
+            'tgl_kejadian' => $request->tgl_kejadian,
+            'lokasi_kejadian' => $request->lokasi_kejadian,
+            'foto' => $fotoPath,
+            'status' => '0',
+            'category_pengaduan' => $request->category_pengaduan,
+            'perumahan_id' => Auth::guard('masyarakat')->user()->perumahan_id,
+        ]);
+
+        if (!$pengaduan) {
+            return redirect()->back()->with(['pengaduan' => 'Gagal mengirim pengaduan!', 'type' => 'error']);
+        }
+
+        return redirect()->back()->with(['pengaduan' => 'Berhasil mengirim pengaduan!', 'type' => 'success']);
+    }
+
+    public function detailPengaduan($id_pengaduan)
+{
+    // Ambil pengaduan berdasarkan id_pengaduan dan nik pengguna yang sedang login
+    $pengaduan = Pengaduan::where('id_pengaduan', $id_pengaduan)
+        ->where('nik', Auth::guard('masyarakat')->user()->nik)
+        ->first();
+
+    // Jika pengaduan tidak ditemukan, kembalikan response redirect
+    if (!$pengaduan) {
+        return redirect()->back()->with(['pengaduan' => 'Pengaduan tidak ditemukan atau Anda tidak memiliki akses!', 'type' => 'error']);
+    }
+
+    // Tampilkan halaman detail pengaduan dengan data pengaduan yang ditemukan
+    return view('pages.user.detail', ['pengaduan' => $pengaduan]);
+}
+// =======================================end pengaduan
+
+// ==================================tanggapan
+public function tanggapan(Request $request)
+    {
+        // Validasi apakah petugas sudah login
+        if (!Auth::guard('petugas')->check()) {
+            return redirect()->back()->with(['pengaduan' => 'Anda tidak memiliki akses!', 'type' => 'error']);
+        }
+
+        // Validasi data input
+        $validate = Validator::make($request->all(), [
+            'id_pengaduan' => ['required', 'exists:pengaduan,id_pengaduan'],
+            'tanggapan' => ['required'],
+        ]);
+
+        if ($validate->fails()) {
+            return redirect()->back()->withErrors($validate)->withInput();
+        }
+
+        // Simpan tanggapan
+        $tanggapan = Tanggapan::create([
+            'id_pengaduan' => $request->id_pengaduan,
+            'tgl_tanggapan' => now(),
+            'tanggapan' => $request->tanggapan,
+            'id_petugas' => Auth::guard('petugas')->user()->id_petugas,
+        ]);
+
+        if (!$tanggapan) {
+            return redirect()->back()->with(['pengaduan' => 'Gagal menyimpan tanggapan!', 'type' => 'error']);
+        }
+
+        // Ubah status pengaduan menjadi '1' (sedang ditanggapi)
+        $pengaduan = Pengaduan::find($request->id_pengaduan);
+        $pengaduan->status = '1';
+        $pengaduan->save();
+
+        return redirect()->back()->with(['pengaduan' => 'Berhasil menyimpan tanggapan!', 'type' => 'success']);
+    }
+// ===================================end tanggapan
+    public function laporanEdit($id_pengaduan)
+    {
+        $pengaduan = Pengaduan::where('id_pengaduan', $id_pengaduan)->first();
+
+        return view('user.edit', ['pengaduan' => $pengaduan]);
+    }
+
+    public function laporanUpdate(Request $request, $id_pengaduan)
+    {
         $data = $request->all();
 
         $validate = Validator::make($data, [
@@ -220,42 +326,29 @@ class UserController extends Controller
             'isi_laporan' => ['required'],
             'tgl_kejadian' => ['required'],
             'lokasi_kejadian' => ['required'],
-            'category_pengaduan' => ['required'],
-            // 'id_kategori' => ['required'],
         ]);
 
         if ($validate->fails()) {
             return redirect()->back()->withErrors($validate)->withInput();
         }
 
-
         if ($request->file('foto')) {
             $data['foto'] = $request->file('foto')->store('assets/pengaduan', 'public');
         }
 
-        date_default_timezone_set('Asia/Bangkok');
+        $pengaduan = Pengaduan::where('id_pengaduan', $id_pengaduan)->first();
 
-        $pengaduan = Pengaduan::create([
-            'tgl_pengaduan' => date('Y-m-d h:i:s'),
-            'nik' => Auth::guard('masyarakat')->user()->nik,
+        $pengaduan->update([
             'judul_laporan' => $data['judul_laporan'],
             'isi_laporan' => $data['isi_laporan'],
             'tgl_kejadian' => $data['tgl_kejadian'],
             'lokasi_kejadian' => $data['lokasi_kejadian'],
-            // 'id_kategori' => $data['id_kategori'],
-            'foto' => $data['foto'] ?? 'assets/pengaduan/tambakmekar.png',
-            'status' => '0',
-            'category_pengaduan' => $data['category_pengaduan'],
+            'foto' => $data['foto'] ?? $pengaduan->foto
         ]);
 
-        if ($pengaduan) {
-
-            return redirect()->back()->with(['pengaduan' => 'Berhasil terkirim!', 'type' => 'success']);
-        } else {
-
-            return redirect()->back()->with(['pengaduan' => 'Gagal terkirim!', 'type' => 'error']);
-        }
+        return redirect()->route('pekat.detail', $id_pengaduan);
     }
+// ------------------------------------------laporan
 
     public function laporan($who = '')
     {
@@ -277,55 +370,6 @@ class UserController extends Controller
             return view('pages.user.laporan', ['pengaduan' => $pengaduan, 'hitung' => $hitung, 'who' => $who]);
         }
     }
-
-    public function detailPengaduan($id_pengaduan)
-    {
-        $pengaduan = Pengaduan::where('id_pengaduan', $id_pengaduan)->first();
-
-        return view('pages.user.detail', ['pengaduan' => $pengaduan]);
-    }
-
-    public function laporanEdit($id_pengaduan)
-    {
-        $pengaduan = Pengaduan::where('id_pengaduan', $id_pengaduan)->first();
-
-        return view('user.edit', ['pengaduan' => $pengaduan]);
-    }
-
-    public function laporanUpdate(Request $request, $id_pengaduan)
-    {
-        $data = $request->all();
-
-        $validate = Validator::make($data, [
-            'judul_laporan' => ['required'],
-            'isi_laporan' => ['required'],
-            'tgl_kejadian' => ['required'],
-            'lokasi_kejadian' => ['required'],
-            // 'id_kategori' => ['required'],
-        ]);
-
-        if ($validate->fails()) {
-            return redirect()->back()->withErrors($validate)->withInput();
-        }
-
-        if ($request->file('foto')) {
-            $data['foto'] = $request->file('foto')->store('assets/pengaduan', 'public');
-        }
-
-        $pengaduan = Pengaduan::where('id_pengaduan', $id_pengaduan)->first();
-
-        $pengaduan->update([
-            'judul_laporan' => $data['judul_laporan'],
-            'isi_laporan' => $data['isi_laporan'],
-            'tgl_kejadian' => $data['tgl_kejadian'],
-            'lokasi_kejadian' => $data['lokasi_kejadian'],
-            // 'id_kategori' => $data['kategori_kejadian'],
-            'foto' => $data['foto'] ?? $pengaduan->foto
-        ]);
-
-        return redirect()->route('pekat.detail', $id_pengaduan);
-    }
-
     public function laporanDestroy(Request $request)
     {
         $pengaduan = Pengaduan::where('id_pengaduan', $request->id_pengaduan)->first();
@@ -334,134 +378,72 @@ class UserController extends Controller
 
         return 'success';
     }
+// -------------------------------------end laparan
 
-
-    public function password()
+    public function showForgotPasswordForm()
     {
-        return view('user.password');
+        return view('auth.passwords.email');
     }
 
-    public function updatePassword(Request $request)
+    public function sendResetLinkEmail(Request $request)
     {
-        $data = $request->all();
+        $masyarakat = Masyarakat::where('email', $request->email)->first();
 
-        if (Auth::guard('masyarakat')->user()->password == null) {
-            $validate = Validator::make($data, [
-                'password' => ['required', 'min:6', 'confirmed'],
-            ]);
-        } else {
-            $validate = Validator::make($data, [
-                'old_password' => ['required', 'min:6'],
-                'password' => ['required', 'min:6', 'confirmed'],
-            ]);
+        if (!$masyarakat) {
+            return back()->withErrors(['email' => 'Email tidak terdaftar']);
         }
 
-        if ($validate->fails()) {
-            return redirect()->back()->withErrors($validate);
-        }
+        $token = Str::random(60); // Generate a random token
+        $masyarakat->notify(new ResetPasswordNotification($token)); // Menggunakan $token dalam notifikasi
 
+        return back()->with('status', 'Link reset password telah dikirim!');
+    }
+
+    public function profile()
+    {
         $nik = Auth::guard('masyarakat')->user()->nik;
-
         $masyarakat = Masyarakat::where('nik', $nik)->first();
+        $perumahans = Perumahan::all();
 
-        if (Auth::guard('masyarakat')->user()->password == null) {
-            $masyarakat->password = Hash::make($data['password']);
-            $masyarakat->save();
-
-            return redirect()->back()->with(['pesan' => 'Password berhasil diubah!', 'type' => 'success']);
-        } elseif (Hash::check($data['old_password'], $masyarakat->password)) {
-
-            $masyarakat->password = Hash::make($data['password']);
-            $masyarakat->save();
-
-            return redirect()->back()->with(['pesan' => 'Password berhasil diubah!', 'type' => 'success']);
-        } else {
-            return redirect()->back()->with(['pesan' => 'Password lama salah!', 'type' => 'error']);
-        }
+        return view('pages.user.profile', compact('masyarakat', 'perumahans'));
     }
 
-    public function ubah(Request $request, $what)
+    public function updateProfile(Request $request)
     {
-        if ($what == 'email') {
-            $masyarakat = Masyarakat::where('nik', $request->nik)->first();
-
-            $masyarakat->email = $request->email;
-            $masyarakat->save();
-
-            return 'success';
-        } elseif ($what == 'telp') {
-
-            $validate = Validator::make($request->all(), [
-                'telp' => ['required', 'regex:/(08)[0-9]/'],
-            ]);
-
-            if ($validate->fails()) {
-                return 'error';
-            }
-
-            $masyarakat = Masyarakat::where('nik', $request->nik)->first();
-
-            $masyarakat->telp = $request->telp;
-            $masyarakat->save();
-
-            return 'success';
-        }
-    }
-
-    public function profil()
-    {
-        $nik = Auth::guard('masyarakat')->user()->nik;
-
-        $masyarakat = Masyarakat::where('nik', $nik)->first();
-
-        return view('user.profil', ['masyarakat' => $masyarakat]);
-    }
-
-    public function updateProfil(Request $request)
-    {
-        $nik = Auth::guard('masyarakat')->user()->nik;
-
-        $data = $request->all();
-
-        $validate = Validator::make($data, [
-            'nik' => ['sometimes', 'required', 'min:16', 'max:16', Rule::unique('masyarakat')->ignore($nik, 'nik')],
-            'nama' => ['required', 'string'],
-            'email' => ['sometimes', 'required', 'email', 'string', Rule::unique('masyarakat')->ignore($nik, 'nik')],
-            'username' => ['sometimes', 'required', 'string', 'regex:/^\S*$/u', Rule::unique('masyarakat')->ignore($nik, 'nik'), 'unique:petugas,username'],
-            'jenis_kelamin' => ['required'],
-            'telp' => ['required', 'regex:/(08)[0-9]/'],
-            'alamat' => ['required'],
-            'rt' => ['required'],
-            'rw' => ['required'],
-            'kode_pos' => ['required'],
-            'province_id' => ['required'],
-            'regency_id' => ['required'],
-            'district_id' => ['required'],
-            'village_id' => ['required'],
+        // Validasi input
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'username' => 'required|string|max:255',
+            'jenis_kelamin' => 'required|in:laki-laki,perempuan',
+            'telp' => 'required|string|max:20',
+            'alamat' => 'required|string|max:255',
+            'rt' => 'required|string|max:10',
+            'rw' => 'required|string|max:10',
         ]);
 
-        if ($validate->fails()) {
-            return redirect()->back()->withErrors($validate);
-        }
+        // Dapatkan instance Masyarakat yang sedang login
+        $masyarakat = auth()->guard('masyarakat')->user();
 
-        $masyarakat = Masyarakat::where('nik', $nik);
+        // Update atribut-atribut pada model Masyarakat
+        $masyarakat->name = $request->name;
+        $masyarakat->email = $request->email;
+        $masyarakat->username = $request->username;
+        $masyarakat->jenis_kelamin = $request->jenis_kelamin;
+        $masyarakat->telp = $request->telp;
+        $masyarakat->alamat = $request->alamat;
+        $masyarakat->rt = $request->rt;
+        $masyarakat->rw = $request->rw;
 
-        $masyarakat->update([
-            'nik' => $data['nik'],
-            'nama' => $data['nama'],
-            'email' => $data['email'],
-            'username' => strtolower($data['username']),
-            'jenis_kelamin' => $data['jenis_kelamin'],
-            'telp' => $data['telp'],
-            'alamat' => $data['alamat'],
-            'rt' => $data['rt'],
-            'rw' => $data['rw'],
-            'kode_pos' => $data['kode_pos'],
-            'province_id' => $data['province_id'],
-            'regency_id' => $data['regency_id'],
-            'district_id' => $data['district_id'],
-            'village_id' => $data['village_id'],
+        // Simpan perubahan pada model Masyarakat
+        $masyarakat->save();
+
+        // Redirect dengan pesan sukses
+        return redirect()->route('user.profile')->with([
+            'pesan' => 'Profil berhasil diperbarui.',
+            'type' => 'success',
         ]);
-        return redirect()->back()->with(['pesan' => 'Profil berhasil diubah!', 'type' => 'success']);
     }
+
+
 }

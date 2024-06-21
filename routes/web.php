@@ -1,6 +1,8 @@
 <?php
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,9 +15,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [\App\Http\Controllers\User\UserController::class, 'index']);
-
 Route::get('/pengaduan',  [\App\Http\Controllers\User\UserController::class, 'pengaduan'])->name('pengaduan');
 Route::post('/pengaduan/kirim',  [\App\Http\Controllers\User\UserController::class, 'storePengaduan'])->name('pengaduan.store');
+
+Route::middleware('auth:masyarakat')->group(function () {
+    Route::get('/profile', [\App\Http\Controllers\User\UserController::class, 'profile'])->name('user.profile');
+    Route::post('/update-profile', [\App\Http\Controllers\User\UserController::class, 'updateProfile'])->name('user.updateProfile');
+});
 
 Route::get('/login',  [\App\Http\Controllers\User\UserController::class, 'masuk']);
 Route::get('/register',  [\App\Http\Controllers\User\UserController::class, 'daftar']);
@@ -33,6 +39,11 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/getkecamatan', [\App\Http\Controllers\IndoRegionController::class, 'getKecamatan'])->name('getkecamatan');
     Route::get('/getprovinces', [\App\Http\Controllers\IndoRegionController::class, 'getProvinces'])->name('getprovinces');
     Route::post('/register/auth', [\App\Http\Controllers\User\UserController::class, 'register_post'])->name('user.register-post');
+
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
 Route::middleware(['isMasyarakat'])->group(function () {
@@ -85,4 +96,8 @@ Route::prefix('admin')->group(function() {
         // Logout Petugas
         Route::get('/logout', [\App\Http\Controllers\Admin\AdminController::class, 'logout'])->name('admin.logout');
     });
+
+
 });
+
+

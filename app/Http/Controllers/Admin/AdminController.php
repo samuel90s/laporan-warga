@@ -38,8 +38,8 @@ class AdminController extends Controller
     }
 
     public function logout()
-{
-    Auth::logout();
-    return redirect('login'); // Mengarahkan kembali ke halaman utama
-}
+    {
+        Auth::logout();
+        return redirect('login'); // Mengarahkan kembali ke halaman utama
+    }
 }

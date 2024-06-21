@@ -5,10 +5,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class Masyarakat extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $table = 'masyarakat'; // Nama tabel di database
 
@@ -43,6 +44,17 @@ class Masyarakat extends Authenticatable
      */
     public function perumahan()
     {
-        return $this->belongsTo(Perumahan::class, 'perumahan_id');
+        return $this->belongsTo(Perumahan::class, 'perumahan_id', 'id');
+    }
+
+    /**
+     * Relationship with Pengaduan model
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pengaduan()
+    {
+        return $this->hasMany(Pengaduan::class, 'nik', 'nik');
     }
 }
+

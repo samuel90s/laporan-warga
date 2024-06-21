@@ -52,6 +52,15 @@
                                     id="telp" required>
                             </div>
                             <div class="form-group">
+                                <label class="form-control-label">Perumahan</label>
+                                <select name="perumahan_id" id="perumahan_id" class="custom-select">
+                                    <option value="" selected disabled>Pilih Perumahan</option>
+                                    @foreach ($perumahan as $p)
+                                        <option value="{{ $p->id }}">{{ $p->nama_perumahan }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label class="form-control-label">Roles</label>
                                 <select name="roles" id="roles" class="custom-select" required>
                                     @if ($petugas->roles == 'admin')

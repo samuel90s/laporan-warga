@@ -19,7 +19,7 @@ class AddCategoryPengaduanToPengaduanTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
+     *tyouch
      * @return void
      */
     public function down()

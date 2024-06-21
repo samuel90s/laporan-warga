@@ -92,7 +92,8 @@
                             </form>
                             <div class="row mt-3">
                                 <div class="col-6">
-                                    <a href="#" class="text-primary"><small>Lupa password?</small></a>
+                                    <a href="{{ route('password.request') }}" class="text-primary"><small>Lupa
+                                            password?</small></a>
                                 </div>
                                 <div class="col-6 text-right">
                                     <a href="{{ url('register') }}" class="text-primary"><small>Buat akun
@@ -110,47 +111,11 @@
     <footer class="py-5" id="footer-main" style="background-color: #2b1e1e;">
         <div class="container">
             <div class="row">
-                <div class="col-md-3">
-                    <h5 class="text-uppercase text-white">Company</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">About Us</a></li>
-                        <li><a href="#" class="text-white">Jobs</a></li>
-                        <li><a href="#" class="text-white">Press</a></li>
-                        <li><a href="#" class="text-white">Blog</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5 class="text-uppercase text-white">Support</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Contact Us</a></li>
-                        <li><a href="#" class="text-white">FAQ</a></li>
-                        <li><a href="#" class="text-white">Return Policy</a></li>
-                        <li><a href="#" class="text-white">Shipping Info</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5 class="text-uppercase text-white">Services</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Support</a></li>
-                        <li><a href="#" class="text-white">Privacy Policy</a></li>
-                        <li><a href="#" class="text-white">Terms of Service</a></li>
-                        <li><a href="#" class="text-white">Accessibility</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5 class="text-uppercase text-white">Follow Us</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Facebook</a></li>
-                        <li><a href="#" class="text-white">Twitter</a></li>
-                        <li><a href="#" class="text-white">Instagram</a></li>
-                        <li><a href="#" class="text-white">LinkedIn</a></li>
-                    </ul>
-                </div>
             </div>
             <hr class="my-4" style="border-top-color: #ffffff;">
             <div class="text-center text-white">
-                &copy; <strong><span><a href="#" class="text-white"
-                            target="_blank">Lapormas</a></span></strong>. {{ date('Y') }}. All rights reserved.
+                &copy; <strong><span><a href="#" class="text-white" target="_blank">Lapormas</a></span></strong>.
+                {{ date('Y') }}. All rights reserved.
             </div>
         </div>
     </footer>
