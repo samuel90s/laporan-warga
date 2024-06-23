@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Start your development with a Dashboard for Bootstrap 4.">
     <meta name="author" content="Creative Tim">
-    <title>Login | Pengaduan Masyarakat</title>
+    <title>Login | Lapormas</title>
 
     @stack('prepend-style')
     @include('includes.admin.style')
@@ -18,7 +18,7 @@
     <nav id="navbar-main" class="navbar navbar-horizontal navbar-transparent navbar-main navbar-expand-lg navbar-light">
         <div class="container">
             <a class="navbar-brand" href="/">
-                Pengaduan Masyarakat
+                Lapormas
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse"
                 aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,7 +29,7 @@
                     <div class="row">
                         <div class="col-6 collapse-brand">
                             <a href="/">
-                                Pengaduan Masyarakat
+                                Lapormas
                             </a>
                         </div>
                         <div class="col-6 collapse-close">

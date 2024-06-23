@@ -5,12 +5,13 @@
 @section('content')
     <!-- This -->
     <!-- ======= Hero Section ======= -->
-    <section id="hero" class="d-flex align-items-center">
+    <section id="hero" class="d-flex align-items-center"
+        style="background-image: url('https://source.unsplash.com/1600x900/?safety,home')">
         <div class="container">
-            <h1>Pengaduan Masyarakat</h1>
+            <h1>Lapormas</h1>
             <a href="{{ route('pengaduan') }}" class="btn-get-started scrollto">Buat Pengaduan</a>
         </div>
-    </section><!-- End Hero -->
+    </section>
 
     <main id="main">
 

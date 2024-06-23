@@ -60,7 +60,7 @@ Route::prefix('admin')->group(function() {
         Route::post('/login', [\App\Http\Controllers\Admin\AdminController::class, 'login'])->name('admin.login');
     });
 
-    Route::middleware('isAdmin')->group(function() {
+    Route::middleware(['isAdmin', 'isKetuarw'])->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
         Route::resource('/petugas', \App\Http\Controllers\Admin\PetugasController::class);
@@ -82,6 +82,7 @@ Route::prefix('admin')->group(function() {
         // Logout Admin
         Route::get('/logout', [\App\Http\Controllers\Admin\AdminController::class, 'logout'])->name('admin.logout');
     });
+
 
     Route::middleware('isPetugas')->group(function() {
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');

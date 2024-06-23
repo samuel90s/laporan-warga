@@ -66,6 +66,18 @@ class Kernel extends HttpKernel
         'isAdmin' => \App\Http\Middleware\IsAdmin::class,
         'isPetugas' => \App\Http\Middleware\IsPetugas::class,
         'isGuest' => \App\Http\Middleware\IsGuest::class,
+        'isKetuarw' => \App\Http\Middleware\IsKetuarw::class,
         // 'isKetuarw' => \App\Http\Middleware\IsKetuarw::class,
+    ];
+
+    // tambahan
+    protected $middlewarePriority = [
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \App\Http\Middleware\Authenticate::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        \Illuminate\Session\Middleware\AuthenticateSession::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Auth\Middleware\Authorize::class,
     ];
 }

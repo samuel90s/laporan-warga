@@ -1,8 +1,8 @@
 <!-- Sidenav -->
-<nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-light bg-white" id="sidenav-main">
+<nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
     <div class="scrollbar-inner">
         <!-- Brand -->
-        <div class="sidenav-header align-items-center">
+        <div class="sidenav-header  align-items-center">
             <a class="navbar-brand" href="{{ route('dashboard') }}">
                 <h2 class="text-primary text-uppercase">Lapormas</h2>
             </a>
@@ -43,7 +43,13 @@
                             </li>
                         </ul>
                     </li>
-                    @if (Auth::guard('admin')->user()->roles == 'admin' || Auth::guard('admin')->user()->roles == 'ketuarw')
+                    @if (Auth::guard('admin')->user()->roles == 'admin')
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('laporan.index') }}">
+                                <i class="fas fa-file-alt text-green"></i>
+                                <span class="nav-link-text">Laporan</span>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('masyarakat.index') }}">
                                 <i class="fas fa-users text-default"></i>
@@ -51,17 +57,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('petugas.index') }}">
+                            <a class="nav-link" href="{{ route('petugas.index') }} ">
                                 <i class="fas fa-users-cog text-info"></i>
                                 <span class="nav-link-text">Petugas</span>
-                            </a>
-                        </li>
-                    @endif
-                    @if (Auth::guard('admin')->user()->roles == 'admin')
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('laporan.index') }}">
-                                <i class="fas fa-file-alt text-green"></i>
-                                <span class="nav-link-text">Laporan</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -73,6 +71,7 @@
                         </li>
                     @endif
                 </ul>
+
             </div>
         </div>
     </div>

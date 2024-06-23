@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>@yield('title') | Pengaduan Masyarakat</title>
+    <title>@yield('title') | Lapormas</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -39,7 +39,7 @@
     <header id="header" class="fixed-top">
         <div class="container d-flex align-items-center">
 
-            <h1 class="logo me-auto"><a href="/">Pengaduan Masyarakat</a></h1>
+            <h1 class="logo me-auto"><a href="/">Lapormas</a></h1>
             @auth('masyarakat')
                 <a href="{{ route('user.logout') }}" class="appointment-btn scrollto">Logout</a>
             @else
